@@ -56,9 +56,11 @@
 
     <!-- Friendly message when no place matches the filters -->
     <div id="no-match" hidden>
-      <p>Nothing matches these filters 🤷</p>
-      <p>Try loosening one of them.</p>
+      <p id="no-match-title">Nothing matches these filters 🤷</p>
+      <p id="no-match-hint">Try loosening one of them.</p>
       <button type="button" id="reset-filters">Reset filters</button>
+      <!-- Only shown when vetoed places are the reason nothing is left -->
+      <button type="button" id="restore-vetoed" hidden>Bring back vetoed places</button>
     </div>
 
     <!-- The big Spin button (hidden when there is nothing to spin on) -->
@@ -69,6 +71,16 @@
 
     <!-- The result card is placed here by app.js -->
     <div id="result" hidden></div>
+
+    <!-- Saved places (hidden until the data is loaded) -->
+    <details id="favorites" hidden>
+      <summary>♥ Favorites (<span id="favorites-count">0</span>)</summary>
+      <p id="favorites-empty">No favorites yet. Tap "♡ Save" on a result.</p>
+      <ul id="favorites-list"></ul>
+      <p id="storage-warning" hidden>
+        Heads up: this browser is blocking storage, so favorites will be lost when you close the page.
+      </p>
+    </details>
   </main>
 
   <script src="app.js"></script>

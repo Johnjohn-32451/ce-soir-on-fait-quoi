@@ -74,7 +74,7 @@ h1 {
 }
 
 #no-match button {
-  margin-top: 10px;
+  margin: 10px 4px 0;
   padding: 10px 16px;
   font-size: 0.95rem;
   color: #fff;
@@ -147,6 +147,97 @@ h1 {
   color: #d9480f;
   background: #fff;
   border: 2px solid #d9480f;
+  border-radius: 8px;
+}
+
+/* Row with the two small buttons (Save + Veto) under "Spin again" */
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.small-button {
+  flex: 1;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #444;
+  background: #f1efea;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* A saved favorite: the heart turns pink */
+.small-button.active {
+  color: #c2255c;
+  background: #fff0f6;
+  border-color: #c2255c;
+}
+
+/* The favorites section at the bottom of the page */
+#favorites {
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+#favorites summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#favorites p {
+  margin: 10px 0 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+#storage-warning {
+  padding: 6px 10px;
+  background: #fff6dd;
+  border-radius: 6px;
+}
+
+#favorites-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.favorite-info {
+  min-width: 0; /* lets long names wrap instead of pushing the button off-screen */
+}
+
+.favorite-info a {
+  color: #2b6cb0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.favorite-info small {
+  display: block;
+  color: #666;
+}
+
+.remove-button {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: #a33;
+  background: #fff;
+  border: 1px solid #d9a5a5;
   border-radius: 8px;
 }
 
