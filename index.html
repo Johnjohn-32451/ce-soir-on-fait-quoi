@@ -15,8 +15,52 @@
   </header>
 
   <main>
-    <!-- app.js fills these two elements -->
+    <!-- Filters: hidden until the places are loaded (app.js shows them) -->
+    <form id="filters" hidden>
+      <label>
+        Mood
+        <select id="filter-mood">
+          <option value="any">Any mood</option>
+          <option value="chill">Chill</option>
+          <option value="festive">Festive</option>
+          <option value="romantic">Romantic</option>
+          <option value="cultural">Cultural</option>
+          <option value="outdoor">Outdoor</option>
+          <option value="foodie">Foodie</option>
+        </select>
+      </label>
+
+      <label>
+        Budget
+        <select id="filter-budget">
+          <option value="any">Any budget</option>
+          <option value="1">● Cheap or free</option>
+          <option value="2">●● Up to medium</option>
+          <option value="3">●●● Up to expensive</option>
+        </select>
+      </label>
+
+      <label>
+        Type
+        <select id="filter-type">
+          <option value="any">Any type</option>
+          <option value="bar">Bar</option>
+          <option value="restaurant">Restaurant</option>
+          <option value="activity">Activity</option>
+        </select>
+      </label>
+    </form>
+
+    <!-- app.js fills these elements -->
     <p id="status" role="status">Loading places…</p>
+
+    <!-- Friendly message when no place matches the filters -->
+    <div id="no-match" hidden>
+      <p>Nothing matches these filters 🤷</p>
+      <p>Try loosening one of them.</p>
+      <button type="button" id="reset-filters">Reset filters</button>
+    </div>
+
     <ul id="place-list"></ul>
   </main>
 

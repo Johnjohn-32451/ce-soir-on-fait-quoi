@@ -1,8 +1,14 @@
-// Ce soir, on fait quoi ? -- Step 1: load places.json and show every place.
+// Ce soir, on fait quoi ? -- Step 2: load places.json, filter, and show the matches.
 
-// The two elements from index.html that we will fill in
+// The elements from index.html that we read from or fill in
 const statusEl = document.getElementById("status");
 const listEl = document.getElementById("place-list");
+const filtersEl = document.getElementById("filters");
+const moodEl = document.getElementById("filter-mood");
+const budgetEl = document.getElementById("filter-budget");
+const typeEl = document.getElementById("filter-type");
+const noMatchEl = document.getElementById("no-match");
+const resetEl = document.getElementById("reset-filters");
 
 // All the places will be stored here once loaded
 let allPlaces = [];
@@ -76,6 +82,49 @@ function renderList(places) {
   }
 }
 
+// Return only the places that match the three filters.
+// "any" means "don't filter on this one".
+function getMatchingPlaces() {
+  const mood = moodEl.value;
+  const budget = budgetEl.value; // "any" or "1" / "2" / "3"
+  const type = typeEl.value;
+
+  return allPlaces.filter(function (place) {
+    // Mood: the place must have that vibe among its vibes
+    const moodOk = mood === "any" || place.vibes.includes(mood);
+    // Budget: "up to N" means price <= N
+    const budgetOk = budget === "any" || place.price <= Number(budget);
+    // Type: exact match
+    const typeOk = type === "any" || place.type === type;
+    // A place is kept only if all three filters agree
+    return moodOk && budgetOk && typeOk;
+  });
+}
+
+// Read the filters, then update the counter, the message and the list.
+// This runs every time the user changes a dropdown.
+function applyFilters() {
+  const matches = getMatchingPlaces();
+
+  if (matches.length === 0) {
+    showStatus("", false); // hide the counter
+    noMatchEl.hidden = false; // show the friendly message
+  } else {
+    noMatchEl.hidden = true;
+    showStatus(matches.length === 1 ? "1 place matches" : matches.length + " places match", false);
+  }
+
+  renderList(matches); // an empty list simply draws nothing
+}
+
+// Put all three filters back on "any"
+function resetFilters() {
+  moodEl.value = "any";
+  budgetEl.value = "any";
+  typeEl.value = "any";
+  applyFilters();
+}
+
 // Load places.json, then show it. If anything goes wrong we show a friendly
 // message instead of a blank page.
 async function loadPlaces() {
@@ -89,13 +138,17 @@ async function loadPlaces() {
       throw new Error("places.json is empty or not a list");
     }
     allPlaces = data;
-    showStatus(allPlaces.length + " places", false);
-    renderList(allPlaces);
+    filtersEl.hidden = false; // the filters only appear once the data is ready
+    applyFilters();
   } catch (error) {
     // The details go to the console (F12) for debugging
     console.error("Could not load places:", error);
     showStatus("Oups, impossible de charger les lieux. Réessaie dans un instant.", true);
   }
 }
+
+// Re-filter whenever a dropdown changes, and when "Reset filters" is tapped
+filtersEl.addEventListener("change", applyFilters);
+resetEl.addEventListener("click", resetFilters);
 
 loadPlaces();

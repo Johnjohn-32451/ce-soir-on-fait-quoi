@@ -29,6 +29,54 @@ h1 {
   color: #666;
 }
 
+/* The filters: three dropdowns stacked on a phone */
+#filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+#filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+#filters select {
+  width: 100%;
+  padding: 12px; /* tall enough for a thumb */
+  font-size: 1rem; /* 16px+ stops iPhones from zooming in when you tap */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* The friendly "nothing matches" box */
+#no-match {
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+#no-match p {
+  margin: 0 0 6px;
+}
+
+#no-match button {
+  margin-top: 10px;
+  padding: 10px 16px;
+  font-size: 0.95rem;
+  color: #fff;
+  background: #2b6cb0;
+  border: none;
+  border-radius: 8px;
+}
+
 /* The message line ("Loading…", or an error) */
 #status {
   text-align: center;
