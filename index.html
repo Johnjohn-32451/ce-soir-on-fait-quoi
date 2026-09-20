@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- This line makes the page fit a phone screen instead of shrinking to a tiny desktop view -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ce soir, on fait quoi ?</title>
+  <!-- Relative paths (no leading slash) so the site works on GitHub Pages -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Ce soir, on fait quoi ?</h1>
+    <p class="subtitle">Une soirée à Lausanne</p>
+  </header>
+
+  <main>
+    <!-- app.js fills these two elements -->
+    <p id="status" role="status">Loading places…</p>
+    <ul id="place-list"></ul>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
