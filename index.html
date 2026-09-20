@@ -61,7 +61,14 @@
       <button type="button" id="reset-filters">Reset filters</button>
     </div>
 
-    <ul id="place-list"></ul>
+    <!-- The big Spin button (hidden when there is nothing to spin on) -->
+    <button type="button" id="spin-button" hidden>Spin</button>
+
+    <!-- The box that flickers through names during the animation -->
+    <div id="spinner" role="status" hidden></div>
+
+    <!-- The result card is placed here by app.js -->
+    <div id="result" hidden></div>
   </main>
 
   <script src="app.js"></script>

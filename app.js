@@ -1,17 +1,27 @@
-// Ce soir, on fait quoi ? -- Step 2: load places.json, filter, and show the matches.
+// Ce soir, on fait quoi ? -- Step 3: filters + Spin button + result card.
 
-// The elements from index.html that we read from or fill in
+// ---------- Elements from index.html ----------
 const statusEl = document.getElementById("status");
-const listEl = document.getElementById("place-list");
 const filtersEl = document.getElementById("filters");
 const moodEl = document.getElementById("filter-mood");
 const budgetEl = document.getElementById("filter-budget");
 const typeEl = document.getElementById("filter-type");
 const noMatchEl = document.getElementById("no-match");
 const resetEl = document.getElementById("reset-filters");
+const spinBtn = document.getElementById("spin-button");
+const spinnerEl = document.getElementById("spinner");
+const resultEl = document.getElementById("result");
 
-// All the places will be stored here once loaded
-let allPlaces = [];
+// ---------- Settings ----------
+const SPIN_DURATION = 2000; // the animation lasts about 2 seconds (in milliseconds)
+const FLICKER_SPEED = 90;   // the name on screen changes every 90 milliseconds
+
+// ---------- Things the app remembers while it runs ----------
+let allPlaces = [];     // every place from places.json
+let lastPlace = null;   // the place we landed on last time (so we never repeat it)
+let isSpinning = false; // true while the animation is running
+
+// ---------- Small helpers ----------
 
 // Show a message to the user (isError = true makes it red)
 function showStatus(message, isError) {
@@ -25,11 +35,18 @@ function priceDots(price) {
   return "●".repeat(price) + "○".repeat(3 - price);
 }
 
-// Build one card (an <li> element) for one place.
+// Pick a random item from a list
+function randomItem(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+// ---------- The result card ----------
+
+// Build one card for one place.
 // We use textContent instead of innerHTML so that characters like "&" in a
 // name can never be misread as HTML.
 function buildCard(place) {
-  const card = document.createElement("li");
+  const card = document.createElement("article");
   card.className = "card";
 
   // Name
@@ -74,13 +91,34 @@ function buildCard(place) {
   return card;
 }
 
-// Draw all the cards on the page
-function renderList(places) {
-  listEl.innerHTML = ""; // empty the list first
-  for (const place of places) {
-    listEl.appendChild(buildCard(place));
-  }
+// Show the result card for the place we landed on
+function showResult(place) {
+  resultEl.innerHTML = ""; // remove any previous card
+  const card = buildCard(place);
+  card.classList.add("landed"); // a little "pop" animation (see style.css)
+
+  // The "Spin again" button lives inside the card
+  const againBtn = document.createElement("button");
+  againBtn.type = "button";
+  againBtn.className = "again-button";
+  againBtn.textContent = "Spin again";
+  againBtn.addEventListener("click", startSpin);
+  card.appendChild(againBtn);
+
+  resultEl.appendChild(card);
+  resultEl.hidden = false;
+  // On a phone the card might be below the screen edge: scroll it into view
+  resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
+
+// Hide the result card and the spinning box
+function clearResult() {
+  resultEl.hidden = true;
+  resultEl.innerHTML = "";
+  spinnerEl.hidden = true;
+}
+
+// ---------- Filters ----------
 
 // Return only the places that match the three filters.
 // "any" means "don't filter on this one".
@@ -101,20 +139,30 @@ function getMatchingPlaces() {
   });
 }
 
-// Read the filters, then update the counter, the message and the list.
+// Turn the three dropdowns on or off (we turn them off during a spin)
+function setFiltersDisabled(disabled) {
+  moodEl.disabled = disabled;
+  budgetEl.disabled = disabled;
+  typeEl.disabled = disabled;
+}
+
+// Read the filters, then update the counter, the message and the Spin button.
 // This runs every time the user changes a dropdown.
 function applyFilters() {
   const matches = getMatchingPlaces();
 
+  // The filters changed, so the old result may no longer match: hide it
+  clearResult();
+
   if (matches.length === 0) {
-    showStatus("", false); // hide the counter
-    noMatchEl.hidden = false; // show the friendly message
+    showStatus("", false);     // hide the counter
+    noMatchEl.hidden = false;  // show the friendly message
+    spinBtn.hidden = true;     // nothing to spin on
   } else {
     noMatchEl.hidden = true;
+    spinBtn.hidden = false;
     showStatus(matches.length === 1 ? "1 place matches" : matches.length + " places match", false);
   }
-
-  renderList(matches); // an empty list simply draws nothing
 }
 
 // Put all three filters back on "any"
@@ -125,7 +173,62 @@ function resetFilters() {
   applyFilters();
 }
 
-// Load places.json, then show it. If anything goes wrong we show a friendly
+// ---------- Spin ----------
+
+// Choose the winning place.
+// If more than one place matches, we never choose the one we landed on last time.
+function pickWinner(matches) {
+  let candidates = matches;
+  if (matches.length > 1) {
+    candidates = matches.filter(function (place) {
+      return place !== lastPlace;
+    });
+  }
+  return randomItem(candidates);
+}
+
+// The Spin button (and "Spin again") calls this
+function startSpin() {
+  // Safety: if a spin is already running, ignore the tap.
+  // This is what stops a double-tap from starting two animations.
+  if (isSpinning) {
+    return;
+  }
+
+  const matches = getMatchingPlaces();
+  if (matches.length === 0) {
+    return; // nothing to spin on
+  }
+
+  isSpinning = true;
+  setFiltersDisabled(true);   // no changing filters mid-spin
+  clearResult();              // hide the previous card, if any
+  spinBtn.hidden = true;      // the spinning box takes its place
+  spinnerEl.hidden = false;
+
+  // Decide the winner now; the animation is just for show
+  const winner = pickWinner(matches);
+
+  // The animation: show a random name every 90 ms...
+  spinnerEl.textContent = randomItem(matches).name;
+  const flicker = setInterval(function () {
+    spinnerEl.textContent = randomItem(matches).name;
+  }, FLICKER_SPEED);
+
+  // ...and after 2 seconds, stop and show the winner
+  setTimeout(function () {
+    clearInterval(flicker);
+    spinnerEl.hidden = true;
+    lastPlace = winner;       // remember it so we don't repeat it next time
+    showResult(winner);
+    setFiltersDisabled(false);
+    isSpinning = false;
+  }, SPIN_DURATION);
+}
+
+// ---------- Loading ----------
+
+// Load places.json, then get ready. If anything goes wrong we show a friendly
 // message instead of a blank page.
 async function loadPlaces() {
   try {
@@ -150,5 +253,6 @@ async function loadPlaces() {
 // Re-filter whenever a dropdown changes, and when "Reset filters" is tapped
 filtersEl.addEventListener("change", applyFilters);
 resetEl.addEventListener("click", resetFilters);
+spinBtn.addEventListener("click", startSpin);
 
 loadPlaces();
